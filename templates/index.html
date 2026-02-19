@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Hero Section with Particles -->
+<div id="hero" class="vh-100 d-flex flex-column justify-content-center align-items-center text-center text-white position-relative" style="overflow: hidden;">
+    <!-- Particles Canvas -->
+    <canvas id="particles-canvas" class="position-absolute top-0 start-0 w-100 h-100"></canvas>
+
+    <!-- Content -->
+    <div class="position-relative z-1">
+        <h1 class="display-4 fw-bold mb-3">📧 Email Spam & Phishing Detection</h1>
+        <p class="lead mb-4">AI-powered email security system to keep your inbox safe</p>
+
+        <div class="d-flex flex-wrap justify-content-center">
+            <a href="/login" class="btn btn-outline-light btn-lg m-2 shadow-sm" style="transition: transform 0.2s;">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Login
+            </a>
+            <a href="/register" class="btn btn-light btn-lg m-2 shadow-sm" style="transition: transform 0.2s;">
+                <i class="bi bi-person-plus-fill me-2"></i> Register
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container my-5">
+    <div class="row g-4 text-center">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="bi bi-shield-lock-fill display-3 text-primary mb-3"></i>
+                    <h5 class="card-title fw-bold">Secure Inbox</h5>
+                    <p class="card-text">Our AI detects spam and phishing attempts before they reach you.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="bi bi-robot display-3 text-success mb-3"></i>
+                    <h5 class="card-title fw-bold">AI-Powered</h5>
+                    <p class="card-text">Advanced machine learning algorithms identify suspicious emails instantly.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm border-0">
+                <div class="card-body">
+                    <i class="bi bi-bar-chart-line-fill display-3 text-warning mb-3"></i>
+                    <h5 class="card-title fw-bold">Analytics</h5>
+                    <p class="card-text">Get insights into email threats and stay informed with actionable reports.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer CTA -->
+<div class="text-center py-5 bg-dark text-white">
+    <h4 class="mb-3">Get Started Today</h4>
+    <a href="/register" class="btn btn-primary btn-lg">Sign Up for Free</a>
+</div>
+
+<!-- Styles -->
+<style>
+    a.btn:hover {
+        transform: scale(1.05);
+    }
+    .card:hover {
+        transform: translateY(-5px);
+        transition: transform 0.3s;
+    }
+    #hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+</style>
+
+<!-- Particles.js Script -->
+<script>
+const canvas = document.getElementById('particles-canvas');
+const ctx = canvas.getContext('2d');
+
+let particlesArray = [];
+const colors = ['#ffffff', '#00ffff', '#ff00ff', '#ffdd00'];
+let width, height;
+
+function resizeCanvas() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = document.getElementById('hero').offsetHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+class Particle {
+    constructor() {
+        this.x = Math.random() * width;
+        this.y = Math.random() * height;
+        this.size = Math.random() * 3 + 1;
+        this.speedX = (Math.random() - 0.5) * 1.5;
+        this.speedY = (Math.random() - 0.5) * 1.5;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if(this.x < 0 || this.x > width) this.speedX *= -1;
+        if(this.y < 0 || this.y > height) this.speedY *= -1;
+    }
+    draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+function initParticles(count = 100) {
+    particlesArray = [];
+    for(let i=0;i<count;i++){
+        particlesArray.push(new Particle());
+    }
+}
+
+function animate() {
+    ctx.clearRect(0,0,width,height);
+    particlesArray.forEach(p => {
+        p.update();
+        p.draw();
+    });
+    requestAnimationFrame(animate);
+}
+
+initParticles(120);
+animate();
+</script>
+
+{% endblock %}

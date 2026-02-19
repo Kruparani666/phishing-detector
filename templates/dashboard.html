@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2 class="mb-4">Welcome, {{ current_user.username }} 👋</h2>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card shadow p-3 text-center">
+      <h5>Total Scans</h5>
+      <h3>{{ total }}</h3>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow p-3 text-center text-success">
+      <h5>Legitimate</h5>
+      <h3>{{ legit }}</h3>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card shadow p-3 text-center text-danger">
+      <h5>Phishing</h5>
+      <h3>{{ phishing }}</h3>
+    </div>
+  </div>
+</div>
+
+<!-- Live Prediction -->
+<div class="card shadow p-4 mb-4">
+  <h4>Live Email Analysis</h4>
+  <textarea id="emailInput" class="form-control mb-3" rows="4" placeholder="Paste email text"></textarea>
+  <button onclick="analyzeEmail()" class="btn btn-primary">Analyze</button>
+
+  <div id="result" class="mt-3"></div>
+</div>
+
+<!-- Search -->
+<input type="text" id="searchInput" onkeyup="filterLogs()" class="form-control mb-3" placeholder="Search logs...">
+
+<!-- Logs -->
+<div id="logs">
+  {% for log in logs %}
+    <div class="card p-3 mb-2 log-item">
+        <strong>{{ log.prediction }}</strong>
+        <p>{{ log.email_text }}</p>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Chart -->
+<div class="card shadow p-4 mt-4">
+  <h4>Prediction Distribution</h4>
+  <canvas id="myChart"></canvas>
+</div>
+
+<script>
+// AJAX Prediction
+function analyzeEmail() {
+    let emailText = document.getElementById("emailInput").value;
+
+    fetch("/predict_ajax", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email: emailText })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById("result").innerHTML =
+            `<div class="alert alert-info">Prediction: ${data.prediction}</div>`;
+        location.reload();
+    });
+}
+
+// Search filter
+function filterLogs() {
+    let input = document.getElementById("searchInput").value.toLowerCase();
+    let logs = document.getElementsByClassName("log-item");
+
+    for (let i = 0; i < logs.length; i++) {
+        let text = logs[i].innerText.toLowerCase();
+        logs[i].style.display = text.includes(input) ? "" : "none";
+    }
+}
+
+// Chart.js
+const ctx = document.getElementById('myChart');
+
+new Chart(ctx, {
+    type: 'pie',
+    data: {
+        labels: ['Legitimate', 'Spam', 'Phishing'],
+        datasets: [{
+            data: [{{ legit }}, {{ spam }}, {{ phishing }}]
+        }]
+    }
+});
+</script>
+
+{% endblock %}

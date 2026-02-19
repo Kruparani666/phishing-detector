@@ -1,0 +1,7 @@
+"phishing_email.csv" 
+"phishing_email.csv" 
+phishing_email.csv 
+*.pkl 
+*.db 
+__pycache__/ 
+.venv/ 
